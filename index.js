@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
+require('dotenv').config();
 const client = new Discord.Client();
-const token = 'ODAyMDk5NzkwNDA5NjI5NzA5.YAqTpA.aSB8nxq8K58dms_r8Ai-tQ799js';
-const login = client.login(token);
+const login = client.login(process.env["TOKEN"]);
 let logChannel = null;
 let mostRecentLogs = [];
 client.on('ready', successLogin);
@@ -36,21 +36,19 @@ client.on('message', message => {
 
 client.on('voiceStateUpdate', async voiceStateUpdate => {
     const { guild } = voiceStateUpdate;
-    const logDC = await guild.fetchAuditLogs({limit : 1, type : "MEMBER_DISCONNECT"});
-    const logM = await guild.fetchAuditLogs({limit : 1, type : "MEMBER_MOVE"});
+    const logDC = await guild.fetchAuditLogs({limit : 1, type : 'MEMBER_DISCONNECT'});
+    const logM = await guild.fetchAuditLogs({limit : 1, type : 'MEMBER_MOVE'});
 
     const { entries } = logs;
     const { executor , target , action} = entries.first();
     console.log(entries.first().createdTimestamp);
-            if (action === "MEMBER_DISCONNECT") {
+            if (action === 'MEMBER_DISCONNECT') {
                 logChannel.send(executor.username + ' disconnected ' + target.username + ' from channel ' + target.voice.channel.name);
             }
-            if (action === "MEMBER_KICK") {
+            if (action === 'MEMBER_KICK') {
                 logChannel.send(executor.username + ' kicked ' + target.username);
             }
-        }
-    }
-});
+    });
 
 function successLogin() {
     logChannel = client.channels.cache.find(channel => channel.id === '802529506132492288');
