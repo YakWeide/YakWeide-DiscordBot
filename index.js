@@ -1,70 +1,49 @@
-const Discord = require('discord.js');
 require('dotenv').config();
+
+const Discord = require('discord.js');
 const client = new Discord.Client();
-const login = client.login(process.env["TOKEN"]);
+const GUILD_NAME = process.env["GUILD_NAME"];
+const LOG_CHANNEL_ID = process.env["CHANNEL_ID"];
+let thisGuild = null;
 let logChannel = null;
 let mostRecentLogs = [];
+
+client.login(process.env["TOKEN"]).then();
 client.on('ready', successLogin);
-client.on('message', message => {
-    const { content, author } = message;
+client.on('voiceStateUpdate', logVoiceStateUpdate);
+//client.on('guildBanAdd');
+//client.on('guildMemberRemove');
 
-    if (content.startsWith('dc ')) {
-        let mem = message.mentions.members.first();
-        if (mem !== null) {
-            if (mem.voice.channel !== null) {
-                mem.voice.kick();
-                logChannel.send(client.user.username + ' disconnected ' + mem.user.username + ' from channel ' + mem.voice.channel.name);
-            }
+async function logVoiceStateUpdate() {
+    let logs = [];
+    logs[0] = await getLogEntry('MEMBER_MOVE',thisGuild);
+    logs[1] = await getLogEntry('MEMBER_DISCONNECT',thisGuild);
+    if (logs[0]) {
+        if (logs[0].createdTimestamp !== mostRecentLogs[0]) {
+            mostRecentLogs[0] = logs[0].createdTimestamp;
+            logChannel.send(logs[0].executor.username + ' moved a user to ' + logs[0].extra.channel.name);
         }
     }
-    else if(content.startsWith('kick ')){
-
-    }
-    else if(content.startsWith('hey Bot')){
-        for (let i = 0; i < 4; i++) {
-            console.log(i + '---------------');
-            console.log(mostRecentLogs[i]);
-        }
-           message.reply('hello human');
-    }
-    else {
-        if (author.id !== client.user.id) {
-            console.log(content);
+    if (logs[1]) {
+        if (logs[1].createdTimestamp !== mostRecentLogs[1]) {
+            mostRecentLogs[1] = logs[1].createdTimestamp;
+            logChannel.send(logs[1].executor.username + ' disconnected a user!');
         }
     }
-});
+}
 
-client.on('voiceStateUpdate', async voiceStateUpdate => {
-    const { guild } = voiceStateUpdate;
-    const logDC = await guild.fetchAuditLogs({limit : 1, type : 'MEMBER_DISCONNECT'});
-    const logM = await guild.fetchAuditLogs({limit : 1, type : 'MEMBER_MOVE'});
-
-    const { entries } = logs;
-    const { executor , target , action} = entries.first();
-    console.log(entries.first().createdTimestamp);
-            if (action === 'MEMBER_DISCONNECT') {
-                logChannel.send(executor.username + ' disconnected ' + target.username + ' from channel ' + target.voice.channel.name);
-            }
-            if (action === 'MEMBER_KICK') {
-                logChannel.send(executor.username + ' kicked ' + target.username);
-            }
-    });
-
-function successLogin() {
-    logChannel = client.channels.cache.find(channel => channel.id === '802529506132492288');
-    const test = client.guilds.cache.find(guild => guild.name === 'yekBotTest');
-    getLog("MEMBER_MOVE", test,0);
-    getLog("MEMBER_DISCONNECT", test,1);
-    getLog("MEMBER_KICK", test,2);
-    getLog("MEMBER_BAN_ADD", test,3);
+async function successLogin() {
+    logChannel = client.channels.cache.find(channel => channel.id === LOG_CHANNEL_ID);
+    thisGuild = client.guilds.cache.find(guild => guild.name === GUILD_NAME);
+    mostRecentLogs[0] = (await getLogEntry('MEMBER_MOVE', thisGuild)).createdTimestamp;
+    mostRecentLogs[1] = (await getLogEntry('MEMBER_DISCONNECT', thisGuild)).createdTimestamp;
     console.log('logged in');
 }
 
-async function getLog(keyWord,guild,index) {
+async function getLogEntry(keyWord,guild) {
     let log = await guild.fetchAuditLogs({limit : 1, type : keyWord});
     const { entries } = log;
-    if (log && entries.first()) {
-        let value = entries.first().createdTimestamp;
-        mostRecentLogs[index] = value;
-    }
+    if (log && entries.first())
+        return entries.first();
+    return null;
 }
