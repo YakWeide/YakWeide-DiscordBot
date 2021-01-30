@@ -37,7 +37,7 @@ async function successLogin() {
     thisGuild = client.guilds.cache.find(guild => guild.name === GUILD_NAME);
     mostRecentLogs[0] = (await getLogEntry('MEMBER_MOVE', thisGuild)).createdTimestamp;
     mostRecentLogs[1] = (await getLogEntry('MEMBER_DISCONNECT', thisGuild)).createdTimestamp;
-    console.log('logged in');
+    logChannel.send('I´m ready');
 }
 
 async function getLogEntry(keyWord,guild) {
