@@ -34,7 +34,8 @@ async function logVoiceStateUpdate() {
 
 async function logKick() {
     let log = (await getLogEntry('GUILD_MEMBER_REMOVE', thisGuild)).createdTimestamp;
-    logChannel.send(log.executor.username + ' kicked ' + log.target.username);
+    if (log)
+        logChannel.send(log.executor.username + ' kicked ' + log.target.username);
 }
 
 async function logBan() {
