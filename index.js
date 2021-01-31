@@ -11,8 +11,8 @@ let mostRecentLogs = [];
 client.login(process.env["TOKEN"]).then();
 client.on('ready', successLogin);
 client.on('voiceStateUpdate', logVoiceStateUpdate);
-//client.on('guildBanAdd');
-//client.on('guildMemberRemove');
+client.on('guildMemberRemove', logKick);
+client.on('guildBanAdd', logBan);
 
 async function logVoiceStateUpdate() {
     let logs = [];
@@ -32,12 +32,23 @@ async function logVoiceStateUpdate() {
     }
 }
 
+async function logKick() {
+    let log = (await getLogEntry('GUILD_MEMBER_REMOVE', thisGuild)).createdTimestamp;
+    logChannel.send(log.executor.username + ' kicked ' + log.target.username);
+}
+
+async function logBan() {
+    let log = (await getLogEntry('GUILD_BAN_ADD', thisGuild)).createdTimestamp;
+    logChannel.send(log.executor.username + ' banned ' + log.target.username);
+}
+
 async function successLogin() {
-    logChannel = client.channels.cache.find(channel => channel.id === LOG_CHANNEL_ID);
+    const channel = client.channels.cache.find(channel => channel.id === LOG_CHANNEL_ID);
+    logChannel = channel;
     thisGuild = client.guilds.cache.find(guild => guild.name === GUILD_NAME);
     mostRecentLogs[0] = (await getLogEntry('MEMBER_MOVE', thisGuild)).createdTimestamp;
     mostRecentLogs[1] = (await getLogEntry('MEMBER_DISCONNECT', thisGuild)).createdTimestamp;
-    logChannel.send('I´m ready');
+    channel.send('I´m ready');
 }
 
 async function getLogEntry(keyWord,guild) {
