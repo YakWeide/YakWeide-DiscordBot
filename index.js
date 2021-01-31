@@ -14,6 +14,7 @@ client.on('voiceStateUpdate', logVoiceStateUpdate);
 client.on('guildMemberRemove', logKick);
 client.on('guildBanAdd', logBan);
 
+//determines whether user has been disconnected or moved -> creates a log
 async function logVoiceStateUpdate() {
     let logs = [];
     logs[0] = await getLogEntry('MEMBER_MOVE',thisGuild);
@@ -32,17 +33,19 @@ async function logVoiceStateUpdate() {
     }
 }
 
+//whenever a user is kicked -> creates a log
 async function logKick() {
     let log = (await getLogEntry('GUILD_MEMBER_REMOVE', thisGuild)).createdTimestamp;
-    if (log)
-        logChannel.send(log.executor.username + ' kicked ' + log.target.username);
+    logChannel.send(log.executor.username + ' kicked ' + log.target.username);
 }
 
+//whenever a user is banned -> creates a log
 async function logBan() {
     let log = (await getLogEntry('GUILD_BAN_ADD', thisGuild)).createdTimestamp;
     logChannel.send(log.executor.username + ' banned ' + log.target.username);
 }
 
+//sets both guild and log channel, also fetches the two most recent move and disconnect logs
 async function successLogin() {
     const channel = client.channels.cache.find(channel => channel.id === LOG_CHANNEL_ID);
     logChannel = channel;
@@ -52,6 +55,7 @@ async function successLogin() {
     channel.send('I´m ready');
 }
 
+//returns the log with the specified keyword, if such a log does not exist, returns null
 async function getLogEntry(keyWord,guild) {
     let log = await guild.fetchAuditLogs({limit : 1, type : keyWord});
     const { entries } = log;
