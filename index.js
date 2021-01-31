@@ -36,13 +36,15 @@ async function logVoiceStateUpdate() {
 //whenever a user is kicked -> creates a log
 async function logKick() {
     let log = (await getLogEntry('GUILD_MEMBER_REMOVE', thisGuild)).createdTimestamp;
-    logChannel.send(log.executor.username + ' kicked ' + log.target.username);
+    if (log)
+        logChannel.send(log.executor.username + ' kicked ' + log.target.username);
 }
 
 //whenever a user is banned -> creates a log
 async function logBan() {
     let log = (await getLogEntry('GUILD_BAN_ADD', thisGuild)).createdTimestamp;
-    logChannel.send(log.executor.username + ' banned ' + log.target.username);
+    if (log)
+        logChannel.send(log.executor.username + ' banned ' + log.target.username);
 }
 
 //sets both guild and log channel, also fetches the two most recent move and disconnect logs
