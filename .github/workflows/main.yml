@@ -1,0 +1,36 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow
+  push:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: self-hosted
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Create envfile
+        run: |
+          touch .env
+          echo DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} >> .env
+          echo DISCORD_GUILD_NAME=${{ secrets.DISCORD_GUILD_NAME }} >> .env
+          echo DISCORD_CHANNEL_ID=${{ secrets.DISCORD_CHANNEL_ID }} >> .env
+
+      - name: Copy to Webserver
+        run: |
+          rm -r /var/www/DiscordBot
+          cp -R /var/actions-runner/_work/YakWeide-DiscordBot/YakWeide-DiscordBot /var/
+          chmod -R 775 /var/www/YakWeide-DiscordBot
+          chown -R www-data:www-data /var/DiscordBot

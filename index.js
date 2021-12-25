@@ -2,13 +2,13 @@ require('dotenv').config();
 
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const GUILD_NAME = process.env.GUILD_NAME;
-const LOG_CHANNEL_ID = process.env.CHANNEL_ID;
+const GUILD_NAME = process.env.DISCORD_GUILD_NAME;
+const LOG_CHANNEL_ID = process.env.DISCORD_CHANNEL_ID;
 let thisGuild = null;
 let logChannel = null;
 let mostRecentLogs = [];
 
-client.login(process.env.TOKEN).then();
+client.login(process.env.DISCORD_TOKEN).then();
 client.on('ready', successLogin);
 client.on('voiceStateUpdate', logVoiceStateUpdate);
 client.on('guildMemberRemove', logKick);
