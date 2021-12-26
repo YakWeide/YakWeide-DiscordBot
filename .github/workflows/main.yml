@@ -38,11 +38,9 @@ jobs:
           chmod -R 775 /var/YakWeide-DiscordBot
           chown -R www-data:www-data /var/YakWeide-DiscordBot
       
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-            node-version: ${{ matrix.node-version }}
-      - run: npm install pm2 -g
-      - run: npm install
-      - run: npm run build --if-present
-      - run: pm2 start index.js
+      - name: Start Discord Bot
+        run: |
+          npm install pm2 -g
+          npm install
+          npm run build --if-present
+          pm2 start index.js
