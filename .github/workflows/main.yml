@@ -30,7 +30,7 @@ jobs:
 
       - name: Copy to Webserver
         run: |
-          rm -r /var/DiscordBot
+          rm -r /var/YakWeide-DiscordBot
           cp -R /var/actions-runner/_work/YakWeide-DiscordBot/YakWeide-DiscordBot /var/
           chmod -R 775 /var/YakWeide-DiscordBot
-          chown -R www-data:www-data /var/DiscordBot
+          chown -R www-data:www-data /var/YakWeide-DiscordBot
