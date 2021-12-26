@@ -34,3 +34,7 @@ jobs:
           cp -R /var/actions-runner/_work/YakWeide-DiscordBot/YakWeide-DiscordBot /var/
           chmod -R 775 /var/YakWeide-DiscordBot
           chown -R www-data:www-data /var/YakWeide-DiscordBot
+
+      - name: Start Discord Bot
+        run: |
+          node index.js
