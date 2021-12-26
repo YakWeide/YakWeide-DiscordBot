@@ -37,4 +37,5 @@ jobs:
 
       - name: Start Discord Bot
         run: |
+          npm install
           node index.js
