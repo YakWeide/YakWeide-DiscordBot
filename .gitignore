@@ -1,3 +1,12 @@
-# Project exclude paths
-/node_modules/
+# JetBrains WebStorm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# .env
 .env
+.env.*
+
+#node
+/node_modules/
